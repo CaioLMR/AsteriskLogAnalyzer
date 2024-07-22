@@ -6,11 +6,13 @@ import gspread
 from gspread_dataframe import set_with_dataframe
 from googleapiclient.discovery import build
 import os
+import io
+import getpass
 
-# Solicita o hostname, usuário e senha para conexão SSH
+# Solicita autenticação para conexão SSH
 hostname = input("Digite o hostname ou endereço IP do servidor SSH: ")
 username = input("Digite Usuario do Servidor SSH: ")
-password = input("Digite a Senha do Servidor SSH: ")
+password = getpass.getpass("Digite a Senha do Servidor SSH: ")
 
 # Comandos a serem executados no servidor remoto
 comando_hostname = 'hostname'
@@ -19,8 +21,9 @@ comando_lagged = 'less -F /var/log/asterisk/messages | grep "Lagged" | grep -E "
 comando_unreachable = 'less -F /var/log/asterisk/messages | grep "UNREACHABLE" | grep -E "\\b([1-9][0-9]{2}|[1-9][0-9]{3})\\b" | awk \'{print $8}\' | sort | uniq -c'
 comando_dnd = 'grep "Playing \'do-not-disturb.slin\'" /var/log/asterisk/full | awk \'{print $1, $2, $3, $4, $7, $9}\''
 comando_exten = 'grep "DidMap not" /var/log/asterisk/full | egrep -o \'(Exten [[:digit:]]*)\' | sort -n | uniq'
+comando_mysql = 'mysql -u root -pIronvox@SegTec22 -e "use ironvox; SELECT * FROM IronvoxConf"'
 
-# Expressão regular para encontrar ramais com 4 dígitos
+# Expressão regular para encontrar ramais com 4 dígitos XXXX ou 3 digitos [2-9]XX
 ramal_regex = r"('\d{4}'|'[2-9]\d{2}')"
 
 # Função para verificar ramais repetidos
@@ -40,10 +43,10 @@ def verificar_ramais_repetidos(output):
     
     return resultados
 
-# Executa o comando pwd e captura o resultado
+# Executa o comando pwd para pegar diretorio onde esta o script
 current_directory = os.popen('pwd').read().strip()
 
-# Define a variável service_account_file com o caminho desejado
+# Define a variável service_account_file com o caminho do json para autenticação
 service_account_file = f'{current_directory}/auth.json'
 print(service_account_file)
 
@@ -61,6 +64,7 @@ def delete_existing_file(drive_service, folder_id, file_name):
         for item in items:
             drive_service.files().delete(fileId=item['id']).execute()
             print(f"Arquivo existente '{file_name}' excluído do Google Drive.")
+            print()  # Linha em branco
 
 # Conectar via SSH e processar
 try:
@@ -89,6 +93,7 @@ try:
     output_unreachable = execute_command(comando_unreachable, "UNREACHABLE")
     output_dnd = execute_command(comando_dnd, "DND")
     output_exten = execute_command(comando_exten, "Exten")
+    output_mysql = execute_command(comando_mysql, "Modulos")
 
     # Chama a função para verificar ramais repetidos com a saída processada
     print("Processando resultados de ramais repetidos...")
@@ -96,13 +101,14 @@ try:
 
     # Criar DataFrames com os resultados dos comandos
     print("Criando DataFrames...")
+    df_mysql = pd.read_csv(io.StringIO(output_mysql), sep='\t')
     df_resultados = pd.DataFrame(resultados_ramais)
     df_lagged = pd.DataFrame([x.split(maxsplit=1) for x in output_lagged.splitlines()], columns=['Contagem', 'Peer'])
     df_unreachable = pd.DataFrame([x.split(maxsplit=1) for x in output_unreachable.splitlines()], columns=['Contagem', 'Peer'])
     df_dnd = pd.DataFrame([x.split() for x in output_dnd.splitlines()], columns=['Data', 'Hora', 'Timezone', 'Ano', 'Peer', 'Arquivo'])
     df_exten = pd.DataFrame([x.split()[1] for x in output_exten.splitlines()], columns=['Exten'])
 
-    # Nome do arquivo Excel
+    # Define nome do arquivo excel pelo host do server remoto
     nome_arquivo_excel = f'{hostname_result}.xlsx'
     print(f"Nome do arquivo Excel: {nome_arquivo_excel}")
 
@@ -128,13 +134,14 @@ try:
         worksheet = sheet.add_worksheet(title=title, rows="100", cols="20")
         set_with_dataframe(worksheet, dataframe)
 
+    add_worksheet_with_data(sheet, "IronvoxConf", df_mysql)
     add_worksheet_with_data(sheet, "Ramais_Repetidos", df_resultados)
     add_worksheet_with_data(sheet, "Lagged", df_lagged)
     add_worksheet_with_data(sheet, "UNREACHABLE", df_unreachable)
     add_worksheet_with_data(sheet, "DND", df_dnd)
     add_worksheet_with_data(sheet, "Exten", df_exten)
 
-    # Remover a planilha padrão
+    # Remover a planilha caso ja exista outra com mesmo nome
     print("Removendo a aba padrão da planilha...")
     sheet.del_worksheet(sheet.sheet1)
 
