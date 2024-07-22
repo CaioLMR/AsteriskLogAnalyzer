@@ -40,14 +40,11 @@ def verificar_ramais_repetidos(output):
     
     return resultados
 
-# Caminho para o arquivo JSON da conta de serviço
-#service_account_file = '/root/sp/auth/inspired-vault-429812-q5-125bb12257af.json'
-
 # Executa o comando pwd e captura o resultado
 current_directory = os.popen('pwd').read().strip()
 
 # Define a variável service_account_file com o caminho desejado
-service_account_file = f'{current_directory}/auth/auth.json'
+service_account_file = f'{current_directory}/auth.json'
 print(service_account_file)
 
 # Autenticação e conexão com Google Drive e Google Sheets
