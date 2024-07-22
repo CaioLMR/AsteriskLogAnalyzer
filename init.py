@@ -8,8 +8,8 @@ from googleapiclient.discovery import build
 
 # Solicita o hostname, usuário e senha para conexão SSH
 hostname = input("Digite o hostname ou endereço IP do servidor SSH: ")
-username = 'root'
-password = '!ronvoX+$39'
+username = input("Digite Usuario do Servidor SSH: ")
+password = input("Digite a Senha do Servidor SSH: ")
 
 # Comandos a serem executados no servidor remoto
 comando_hostname = 'hostname'
@@ -20,8 +20,6 @@ comando_dnd = 'grep "Playing \'do-not-disturb.slin\'" /var/log/asterisk/full | a
 comando_exten = 'grep "DidMap not" /var/log/asterisk/full | egrep -o \'(Exten [[:digit:]]*)\' | sort -n | uniq'
 
 # Expressão regular para encontrar ramais com 4 dígitos
-#ramal_regex = r'(\d{4})'
-#ramal_regex = r'(\d{4}|[2-9]\d{2})'
 ramal_regex = r"('\d{4}'|'[2-9]\d{2}')"
 
 # Função para verificar ramais repetidos
@@ -71,7 +69,6 @@ try:
     print("Conectado ao servidor.")
 
     # Executa o comando `hostname` no servidor remoto
-    print("Executando comando 'hostname'...")
     stdin_hostname, stdout_hostname, stderr_hostname = ssh_client.exec_command(comando_hostname)
     hostname_result = stdout_hostname.read().decode('utf-8').strip()
     print(f"Hostname do servidor: {hostname_result}")
