@@ -1,13 +1,13 @@
-import paramiko
-import pandas as pd
-import re
-from google.oauth2.service_account import Credentials
-import gspread
+import paramiko #comunicação com servidores remotos (ssh)
+import pandas as pd #Analise de dados (excel)
+import re #Expressoes regulares
+from google.oauth2.service_account import Credentials #Autorizar a aplicação para acessar api do google
+import gspread #interação com google sheets
 from gspread_dataframe import set_with_dataframe
 from googleapiclient.discovery import build
-import os
-import io
-import getpass
+import os #interagir com o sistema operacional subjacente
+import io #trabalhar com entrada e saida de dados
+import getpass #Mascarar Caracteres - senha
 
 # Solicita autenticação para conexão SSH
 hostname = input("Digite o hostname ou endereço IP do servidor SSH: ")
