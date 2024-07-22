@@ -13,6 +13,7 @@ import getpass #Mascarar Caracteres - senha
 hostname = input("Digite o hostname ou endereço IP do servidor SSH: ")
 username = input("Digite Usuario do Servidor SSH: ")
 password = getpass.getpass("Digite a Senha do Servidor SSH: ")
+passwordbd = getpass.getpass("Digite a Senha do Banco de Dados: ")
 
 # Comandos a serem executados no servidor remoto
 comando_hostname = 'hostname'
@@ -21,7 +22,7 @@ comando_lagged = 'less -F /var/log/asterisk/messages | grep "Lagged" | grep -E "
 comando_unreachable = 'less -F /var/log/asterisk/messages | grep "UNREACHABLE" | grep -E "\\b([1-9][0-9]{2}|[1-9][0-9]{3})\\b" | awk \'{print $8}\' | sort | uniq -c'
 comando_dnd = 'grep "Playing \'do-not-disturb.slin\'" /var/log/asterisk/full | awk \'{print $1, $2, $3, $4, $7, $9}\''
 comando_exten = 'grep "DidMap not" /var/log/asterisk/full | egrep -o \'(Exten [[:digit:]]*)\' | sort -n | uniq'
-comando_mysql = 'mysql -u root -pIronvox@SegTec22 -e "use ironvox; SELECT * FROM IronvoxConf"'
+comando_mysql = 'mysql -u root -p{passwordbd} -e "use ironvox; SELECT * FROM IronvoxConf"'
 
 # Expressão regular para encontrar ramais com 4 dígitos XXXX ou 3 digitos [2-9]XX
 ramal_regex = r"('\d{4}'|'[2-9]\d{2}')"
