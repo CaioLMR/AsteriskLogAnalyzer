@@ -5,6 +5,7 @@ from google.oauth2.service_account import Credentials
 import gspread
 from gspread_dataframe import set_with_dataframe
 from googleapiclient.discovery import build
+import os
 
 # Solicita o hostname, usuário e senha para conexão SSH
 hostname = input("Digite o hostname ou endereço IP do servidor SSH: ")
@@ -40,7 +41,14 @@ def verificar_ramais_repetidos(output):
     return resultados
 
 # Caminho para o arquivo JSON da conta de serviço
-service_account_file = '/root/sp/auth/inspired-vault-429812-q5-125bb12257af.json'
+#service_account_file = '/root/sp/auth/inspired-vault-429812-q5-125bb12257af.json'
+
+# Executa o comando pwd e captura o resultado
+current_directory = os.popen('pwd').read().strip()
+
+# Define a variável service_account_file com o caminho desejado
+service_account_file = f'{current_directory}/auth/auth.json'
+print(service_account_file)
 
 # Autenticação e conexão com Google Drive e Google Sheets
 scope = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
