@@ -6,4 +6,5 @@
 
 #Execute o script: python3 init.py
 
-
+#NAME="Debian GNU/Linux"
+#VERSION_ID="11"
