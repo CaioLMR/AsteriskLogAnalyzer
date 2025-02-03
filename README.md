@@ -49,6 +49,6 @@ Para rodar o script, basta executá-lo com o Python:
 
 ```bash
 python nome_do_script.py
-
+```
 
 
