@@ -26,6 +26,7 @@ Você pode instalar as dependências com o seguinte comando:
 
 ```bash
 pip install paramiko pandas gspread google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client gspread-dataframe
+```
 
 ## Como Usar
 
@@ -48,4 +49,6 @@ Para rodar o script, basta executá-lo com o Python:
 
 ```bash
 python nome_do_script.py
+
+
 
