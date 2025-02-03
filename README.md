@@ -27,3 +27,25 @@ Você pode instalar as dependências com o seguinte comando:
 ```bash
 pip install paramiko pandas gspread google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client gspread-dataframe
 
+## Como Usar
+
+### Passo 1: Prepare o arquivo de credenciais do Google
+
+O script requer um arquivo `auth.json` para autenticar a aplicação. Certifique-se de ter o arquivo de credenciais do Google e coloque-o no mesmo diretório do script.
+
+### Passo 2: Execute o Script
+
+O script solicita as seguintes informações para a execução:
+
+- **Endereço IP do servidor SSH**
+- **Usuário do servidor SSH**
+- **Senha do servidor SSH**
+- **Senha do banco de dados**
+
+Após isso, o script se conecta ao servidor SSH, executa comandos para obter informações e armazena os resultados em planilhas do Google Sheets.
+
+Para rodar o script, basta executá-lo com o Python:
+
+```bash
+python nome_do_script.py
+
